@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.app.taskmanager.dto.CreateNoteDTO;
 import com.app.taskmanager.dto.CreateTaskDTO;
 import com.app.taskmanager.entities.TaskEntity;
 import com.app.taskmanager.service.TaskService;
@@ -43,5 +44,14 @@ public class TaskController {
 	public ResponseEntity<TaskEntity> addTask(@RequestBody CreateTaskDTO body){
 		var task = taskService.addTask(body.getTitle(), body.getDescription(), body.getDeadline());
 		return ResponseEntity.ok(task);
+	}
+	
+	@PostMapping("/addNotes/{id}")
+	public ResponseEntity<TaskEntity> addNotes( @RequestBody CreateNoteDTO body , @PathVariable("id") Integer id){
+		var task = taskService.addNotes(id, body.getTitle(), body.getBody());
+		if(task == null) {
+			return ResponseEntity.notFound().build();
+		}
+		return ResponseEntity.ok(task); 
 	}
 }
