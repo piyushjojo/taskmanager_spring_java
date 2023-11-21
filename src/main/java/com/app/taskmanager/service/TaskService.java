@@ -17,20 +17,27 @@ public class TaskService {
 	private int taskId = 1;
 	private final SimpleDateFormat deadlineFormatter = new SimpleDateFormat("yyyy-MM-dd");
 
-	public TaskEntity addTask(String title, String description, String deadline) {
+	public TaskEntity addTask(String title, String description, String deadline) throws ParseException {
 		TaskEntity task = new TaskEntity();
 		task.setId(taskId);
 		task.setTitle(title);
 		task.setDescription(description);
-		try {
-			task.setDeadline(deadlineFormatter.parse(deadline));
-		} catch (ParseException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		task.setDeadline(deadlineFormatter.parse(deadline));
 		task.setCompleted(false);
 		tasks.add(task);
 		taskId++;
+		return task;
+	}
+	
+	public TaskEntity updateTask(int id , String description, String deadline, boolean completed) throws ParseException {
+		TaskEntity task  = getTaskById(id);
+		if(task == null) {
+			return task;
+		}
+		if(description != null) task.setDescription(description);
+		if(deadline != null) task.setDeadline(deadlineFormatter.parse(deadline));
+		task.setCompleted(completed);
+		
 		return task;
 	}
 

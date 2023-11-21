@@ -1,18 +1,23 @@
 package com.app.taskmanager.controllers;
 
+import java.text.ParseException;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.app.taskmanager.dto.CreateNoteDTO;
 import com.app.taskmanager.dto.CreateTaskDTO;
+import com.app.taskmanager.dto.ErrorResponseDTO;
+import com.app.taskmanager.dto.UpdateTaskDTO;
 import com.app.taskmanager.entities.TaskEntity;
 import com.app.taskmanager.service.TaskService;
 
@@ -21,37 +26,57 @@ import com.app.taskmanager.service.TaskService;
 public class TaskController {
 
 	@Autowired
-	private TaskService taskService  ;
-	
+	private TaskService taskService;
+
 	@GetMapping
-	public ResponseEntity<List<TaskEntity>> getTasks(){
-		var tasks =  taskService.getTasks();
-		
+	public ResponseEntity<List<TaskEntity>> getTasks() {
+		var tasks = taskService.getTasks();
+
 		return ResponseEntity.ok(tasks);
 	}
-	
+
 	@GetMapping("/{id}")
-	public ResponseEntity<TaskEntity> getTaskById(@PathVariable("id") Integer id){
+	public ResponseEntity<TaskEntity> getTaskById(@PathVariable("id") Integer id) {
 		var task = taskService.getTaskById(id);
-		
-		if(task == null) {
+
+		if (task == null) {
 			return ResponseEntity.notFound().build();
 		}
-		return ResponseEntity.ok(task); 
+		return ResponseEntity.ok(task);
 	}
-	
+
+	@PutMapping("/update/{id}")
+	public ResponseEntity<TaskEntity> updateTask(@PathVariable("id") Integer id, @RequestBody UpdateTaskDTO body)
+			throws ParseException {
+		var task = taskService.updateTask(id, body.getDescription(), body.getDeadline(), body.isCompleted());
+		if (task == null) {
+			return ResponseEntity.notFound().build();
+		}
+		return ResponseEntity.ok(task);
+	}
+
 	@PostMapping("")
-	public ResponseEntity<TaskEntity> addTask(@RequestBody CreateTaskDTO body){
+	public ResponseEntity<TaskEntity> addTask(@RequestBody CreateTaskDTO body) throws ParseException {
 		var task = taskService.addTask(body.getTitle(), body.getDescription(), body.getDeadline());
 		return ResponseEntity.ok(task);
 	}
-	
+
 	@PostMapping("/addNotes/{id}")
-	public ResponseEntity<TaskEntity> addNotes( @RequestBody CreateNoteDTO body , @PathVariable("id") Integer id){
+	public ResponseEntity<TaskEntity> addNotes(@PathVariable("id") Integer id, @RequestBody CreateNoteDTO body) {
 		var task = taskService.addNotes(id, body.getTitle(), body.getBody());
-		if(task == null) {
+		if (task == null) {
 			return ResponseEntity.notFound().build();
 		}
-		return ResponseEntity.ok(task); 
+		return ResponseEntity.ok(task);
+	}
+
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<ErrorResponseDTO> handleError(Exception e) {
+		if (e instanceof ParseException) {
+			return ResponseEntity.badRequest().body(new ErrorResponseDTO("Invalid date format."));
+
+		}
+		e.printStackTrace();
+		return ResponseEntity.internalServerError().body(new ErrorResponseDTO("Internal Server Error"));
 	}
 }
