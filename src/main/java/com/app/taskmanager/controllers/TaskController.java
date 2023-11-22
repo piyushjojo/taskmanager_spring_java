@@ -29,7 +29,7 @@ public class TaskController {
 	private final TaskService taskService;
 
 	private final NotesService notesService;
-	
+
 	private ModelMapper modelmapper = new ModelMapper();
 
 	public TaskController(TaskService taskService, NotesService notesService) {
@@ -45,12 +45,12 @@ public class TaskController {
 		return ResponseEntity.ok(tasks);
 	}
 
-
 	@PostMapping("")
 	public ResponseEntity<TaskEntity> addTask(@RequestBody CreateTaskDTO body) throws ParseException {
 		var task = taskService.addTask(body.getTitle(), body.getDescription(), body.getDeadline());
 		return ResponseEntity.ok(task);
 	}
+
 	@GetMapping("/{id}")
 	public ResponseEntity<TaskResponseDTO> getTaskById(@PathVariable("id") Integer id) {
 		var task = taskService.getTaskById(id);
@@ -59,7 +59,7 @@ public class TaskController {
 		if (task == null) {
 			return ResponseEntity.notFound().build();
 		}
-		var taskResponse = modelmapper.map(task,TaskResponseDTO.class);
+		var taskResponse = modelmapper.map(task, TaskResponseDTO.class);
 		taskResponse.setNotes(notes);
 		return ResponseEntity.ok(taskResponse);
 	}
@@ -73,7 +73,6 @@ public class TaskController {
 		}
 		return ResponseEntity.ok(task);
 	}
-
 
 	@ExceptionHandler(Exception.class)
 	public ResponseEntity<ErrorResponseDTO> handleError(Exception e) {

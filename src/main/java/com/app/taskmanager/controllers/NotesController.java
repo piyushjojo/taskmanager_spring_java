@@ -1,4 +1,4 @@
-package com.app.taskmanager.service;
+package com.app.taskmanager.controllers;
 
 import java.util.List;
 
@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.app.taskmanager.dto.CreateNoteDTO;
 import com.app.taskmanager.dto.CreateNoteResponseDTO;
 import com.app.taskmanager.entities.NotesEntity;
+import com.app.taskmanager.service.NotesService;
 
 @RestController
 @RequestMapping("/tasks/{taskId}/notes")
