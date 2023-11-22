@@ -29,14 +29,14 @@ public class TaskService {
 		return task;
 	}
 	
-	public TaskEntity updateTask(int id , String description, String deadline, boolean completed) throws ParseException {
+	public TaskEntity updateTask(int id , String description, String deadline, Boolean completed) throws ParseException {
 		TaskEntity task  = getTaskById(id);
 		if(task == null) {
 			return task;
 		}
 		if(description != null) task.setDescription(description);
 		if(deadline != null) task.setDeadline(deadlineFormatter.parse(deadline));
-		task.setCompleted(completed);
+		if(completed != null) task.setCompleted(completed);
 		
 		return task;
 	}
@@ -54,22 +54,4 @@ public class TaskService {
 		return null;
 	}
 
-	public TaskEntity addNotes(int id, String title, String body) {
-		TaskEntity task = getTaskById(id);
-		if (task == null) {
-			return null;
-		}
-		NotesEntity note = new NotesEntity();
-		note.setTitle(title);
-		note.setBody(body);
-
-		List<NotesEntity> notesList = task.getNotes();
-		if(notesList == null) {
-			notesList = new ArrayList<>() ; 
-		}
-		notesList.add(note);
-		task.setNotes(notesList);
-		return task;
-
-	}
 }

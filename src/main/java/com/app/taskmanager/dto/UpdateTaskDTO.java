@@ -13,6 +13,6 @@ public class UpdateTaskDTO {
 
 	private String description ;
 	private String deadline ; 
-	private boolean completed ;
+	private Boolean completed ;
 	
 }
